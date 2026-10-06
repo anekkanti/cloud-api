@@ -54,11 +54,10 @@ nexgen: nexgen-build
 	rm -rf $(NEXGEN_OUT)
 	buf generate --template buf.gen.nexgen.yaml
 
+# One line: GNU make with this Makefile's SHELL doesn't keep backslash-newline
+# continuations together.
 nexgen-check: nexgen-test nexgen
-	@if [ -n "$$(git status --porcelain -- $(NEXGEN_OUT))" ]; then \
-		echo "$(NEXGEN_OUT)/ is out of date; run 'make nexgen' and commit the result"; \
-		git status --short -- $(NEXGEN_OUT); git --no-pager diff -- $(NEXGEN_OUT); exit 1; \
-	fi
+	@[ -z "$$(git status --porcelain -- $(NEXGEN_OUT))" ] || { echo "$(NEXGEN_OUT)/ is out of date; run 'make nexgen' and commit the result"; git status --short -- $(NEXGEN_OUT); git --no-pager diff -- $(NEXGEN_OUT); exit 1; }
 
 $(NEXGEN):
 	printf $(COLOR) "Install nexgen $(NEXGEN_REV)..."
